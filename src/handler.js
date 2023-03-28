@@ -85,7 +85,7 @@ const getAllBooks = (request, h) => {
   let filteredBooks = [...books];
   // Filtered from query name
   if (name) {
-    filteredBooks = filteredBooks.filter((b) =>
+    filteredBooks = books.filter((b) =>
       b.name.toLowerCase().includes(name.toLowerCase())
     );
   }
