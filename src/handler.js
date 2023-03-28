@@ -12,6 +12,7 @@ const addBookHandler = (request, h) => {
     readPage,
     reading,
   } = request.payload;
+
   if (!name) {
     const response = h.response({
       status: 'fail',
@@ -20,6 +21,7 @@ const addBookHandler = (request, h) => {
     response.code(400);
     return response;
   }
+
   if (pageCount > readPage) {
     const response = h.response({
       status: 'fail',
@@ -29,11 +31,13 @@ const addBookHandler = (request, h) => {
     response.code(400);
     return response;
   }
+
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
   const finished = pageCount === readPage;
-  const book = {
+
+  const newBook = {
     id,
     name,
     year,
@@ -47,7 +51,8 @@ const addBookHandler = (request, h) => {
     insertedAt,
     updatedAt,
   };
-  books.push(book);
+
+  books.push(newBook);
 
   const isSuccess = books.filter((b) => b.id === id).length > 0;
 
@@ -62,6 +67,13 @@ const addBookHandler = (request, h) => {
     response.code(201);
     return response;
   }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku gagal ditampilkan',
+  });
+  response.code(500);
+  return response;
 };
 
 module.exports = { addBookHandler };
