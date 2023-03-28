@@ -81,10 +81,29 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooks = (request, h) => {
+  const { name, reading, finished } = request.query;
+  let filteredBooks = [...books];
+  if (name) {
+    filteredBooks = filteredBooks.filter((b) =>
+      b.name.toLowerCase().includes(name.toLowerCase())
+    );
+  }
+
+  if (reading) {
+    filteredBooks = filteredBooks.filter(
+      (b) => b.reading === !!Number(reading)
+    );
+  }
+
+  if (finished) {
+    filteredBooks = filteredBooks.filter(
+      (b) => b.finished === !!Number(finished)
+    );
+  }
   const response = h.response({
     status: 'success',
     data: {
-      books: books.map((book) => ({
+      books: filteredBooks.map((book) => ({
         id: book.id,
         name: book.name,
         publisher: book.publisher,
