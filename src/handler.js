@@ -106,6 +106,12 @@ const getBookByIdHandler = (request, h) => {
     });
     return response;
   }
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku tidak ditemukan',
+  });
+  response.code(404);
+  return response;
 };
 
 module.exports = { addBookHandler, getAllBooks, getBookByIdHandler };
