@@ -13,6 +13,7 @@ const addBookHandler = (request, h) => {
     reading,
   } = request.payload;
 
+  // Validate input
   if (!name) {
     const response = h.response({
       status: 'fail',
@@ -21,7 +22,6 @@ const addBookHandler = (request, h) => {
     response.code(400);
     return response;
   }
-
   if (pageCount > readPage) {
     const response = h.response({
       status: 'fail',
@@ -32,6 +32,7 @@ const addBookHandler = (request, h) => {
     return response;
   }
 
+  // Init book
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
@@ -52,8 +53,10 @@ const addBookHandler = (request, h) => {
     updatedAt,
   };
 
+  // Add new book
   books.push(newBook);
 
+  // Check if new book was added
   const isSuccess = books.filter((b) => b.id === id).length > 0;
 
   if (isSuccess) {
@@ -68,6 +71,7 @@ const addBookHandler = (request, h) => {
     return response;
   }
 
+  // If fail to add new book
   const response = h.response({
     status: 'fail',
     message: 'Buku gagal ditampilkan',
@@ -76,4 +80,32 @@ const addBookHandler = (request, h) => {
   return response;
 };
 
-module.exports = { addBookHandler };
+const getAllBooks = (request, h) => {
+  const response = h.response({
+    status: 'success',
+    data: {
+      books: books.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  });
+  return response;
+};
+
+const getBookByIdHandler = (request, h) => {
+  const { bookId } = request.params;
+  const book = books.filter((b) => b.id === bookId)[0];
+  if (book) {
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: book,
+      },
+    });
+    return response;
+  }
+};
+
+module.exports = { addBookHandler, getAllBooks, getBookByIdHandler };
