@@ -82,24 +82,26 @@ const addBookHandler = (request, h) => {
 
 const getAllBooks = (request, h) => {
   const { name, reading, finished } = request.query;
-  let filteredBooks = [...books];
+  let filteredBooks = books;
+  // Filtered from query name
   if (name) {
     filteredBooks = filteredBooks.filter((b) =>
       b.name.toLowerCase().includes(name.toLowerCase())
     );
   }
-
+  // Filtered from query reading
   if (reading) {
     filteredBooks = filteredBooks.filter(
       (b) => b.reading === !!Number(reading)
     );
   }
-
+  // Filtered from query finished
   if (finished) {
     filteredBooks = filteredBooks.filter(
       (b) => b.finished === !!Number(finished)
     );
   }
+  // Response appropriate data obj format with filtered array from query or without query
   const response = h.response({
     status: 'success',
     data: {
@@ -116,18 +118,20 @@ const getAllBooks = (request, h) => {
 
 const getBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
+  // Get book obj value if bookId and id book obj match
   const book = books.filter((b) => b.id === bookId)[0];
+  // If book object not undefined return book obj value filter
   if (book) {
     const response = h.response({
       status: 'success',
       data: {
-        books: book,
+        book,
       },
     });
     response.code(200);
     return response;
   }
-
+  // If bookId not match
   const response = h.response({
     status: 'fail',
     message: 'Buku tidak ditemukan',
@@ -148,31 +152,34 @@ const editBookByIdHandler = (request, h) => {
     readPage,
     reading,
   } = request.payload;
-
-  const updatedAt = new Date().toISOString();
+  // Find index form books array if bookId match with book id obj
   const index = books.findIndex((b) => b.id === bookId);
-
+  // If book obj index found
   if (index !== -1) {
+    // Validate input
     if (!name) {
       const response = h.response({
         status: 'fail',
-        message: 'Gagal menambahkan buku. Mohon isi nama buku',
+        message: 'Gagal memperbarui buku. Mohon isi nama buku',
       });
       response.code(400);
       return response;
     }
-    if (pageCount > readPage) {
+
+    if (readPage > pageCount) {
       const response = h.response({
         status: 'fail',
         message:
-          'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+          'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
       });
       response.code(400);
       return response;
     }
 
     const finished = pageCount === readPage;
-
+    // Set new value to updatedAt
+    const updatedAt = new Date().toISOString();
+    // Update book obj with corresponding index
     books[index] = {
       ...books[index],
       name,
@@ -194,7 +201,7 @@ const editBookByIdHandler = (request, h) => {
     response.code(200);
     return response;
   }
-
+  // If bookId not found
   const response = h.response({
     status: 'fail',
     message: 'Gagal memperbarui buku. Id tidak ditemukan',
@@ -205,8 +212,11 @@ const editBookByIdHandler = (request, h) => {
 
 const deleteBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
+  // Find index form books array if bookId match with book id obj
   const index = books.findIndex((b) => b.id === bookId);
+  // If book obj index found
   if (index !== -1) {
+    // Remove obj from array books with corresponding index
     books.splice(index, 1);
     const response = h.response({
       status: 'success',
@@ -215,7 +225,7 @@ const deleteBookByIdHandler = (request, h) => {
     response.code(200);
     return response;
   }
-
+  // If bookId bot found
   const response = h.response({
     status: 'fail',
     message: 'Buku gagal dihapus. Id tidak ditemukan',
