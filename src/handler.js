@@ -22,7 +22,7 @@ const addBookHandler = (request, h) => {
     response.code(400);
     return response;
   }
-  if (pageCount > readPage) {
+  if (readPage > pageCount) {
     const response = h.response({
       status: 'fail',
       message:
